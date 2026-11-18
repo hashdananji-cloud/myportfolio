@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Boba Bar – Bubble Tea Menu</title>
+    <style>
+      :root {
+        --bg: #fff4e6;
+        --ink: #3b2418;
+        --muted: #7a5b4a;
+        --panel: #fffaf3;
+        --wood1: #a8693a;
+        --wood2: #7a4522;
+        --accent: #c68b59;
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #1d130d;
+          --ink: #fbeedd;
+          --muted: #cdb299;
+          --panel: #2a1b13;
+          --wood1: #6d3f20;
+          --wood2: #43250f;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #1d130d;
+        --ink: #fbeedd;
+        --muted: #cdb299;
+        --panel: #2a1b13;
+        --wood1: #6d3f20;
+        --wood2: #43250f;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Poppins", system-ui, sans-serif;
+        overflow: hidden;
+        position: relative;
+      }
+      .glow {
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(circle at 28% 45%, var(--accent), transparent 60%);
+        opacity: 0;
+        transition: opacity 0.8s, background 0.8s;
+        pointer-events: none;
+      }
+      body.focus .glow {
+        opacity: 0.45;
+      }
+      header {
+        position: fixed;
+        top: env(safe-area-inset-top, 0px);
+        left: 0;
+        right: 0;
+        padding: 22px 5vw;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 5;
+      }
+      .logo {
+        font-weight: 800;
+        font-size: 1.3rem;
+        letter-spacing: 0.5px;
+      }
+      .hero {
+        position: absolute;
+        top: 13vh;
+        left: 0;
+        right: 0;
+        text-align: center;
+        padding: 0 6vw;
+        transition: opacity 0.5s, transform 0.6s;
+      }
+      .hero h1 {
+        font-size: clamp(2rem, 6vw, 4rem);
+        line-height: 1.05;
+        font-weight: 800;
+      }
+      .hero p {
+        margin-top: 12px;
+        color: var(--muted);
+        font-size: clamp(0.95rem, 2vw, 1.15rem);
+      }
+      body.focus .hero {
+        opacity: 0;
+        transform: translateY(-30px);
+        pointer-events: none;
+      }
+      .table {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 40vh; /* Increased table height */
+        background: linear-gradient(180deg, var(--wood1), var(--wood2));
+        box-shadow: inset 0 14px 30px rgba(0, 0, 0, 0.35);
+        border-top: 6px solid rgba(255, 255, 255, 0.12);
+      }
+      .table::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          repeating-linear-gradient(90deg, transparent 0 80px, rgba(0, 0, 0, 0.12) 80px 82px),
+          repeating-linear-gradient(0deg, transparent 0 22px, rgba(255, 255, 255, 0.04) 22px 24px);
+      }
+      #row {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: calc(40vh - 100px); /* Adjusted to sit higher on the larger table */
+        display: flex;
+        justify-content: center;
+        align-items: flex-end; /* Align cups to bottom */
+        gap: clamp(10px, 3vw, 40px);
+        padding: 0 2vw;
+      }
+      .slot {
+        /* Made cups significantly larger */
+        width: clamp(80px, 18vw, 160px);
+        aspect-ratio: 120/200;
+        position: relative;
+      }
+      .cup {
+        position: absolute;
+        inset: 0;
+        border: 0;
+        background: none;
+        cursor: pointer;
+        transition: transform 0.9s cubic-bezier(0.2, 0.9, 0.25, 1.1), opacity 0.5s, filter 0.5s;
+        animation: float 4s ease-in-out infinite;
+        animation-delay: var(--d);
+        -webkit-tap-highlight-color: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .cup img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        /* Stronger shadow to make images pop */
+        filter: drop-shadow(0 15px 15px rgba(0, 0, 0, 0.45));
+        transition: transform 0.3s;
+        display: block;
+        pointer-events: none;
+      }
+      .cup:hover:not(.sel) {
+        transform: translateY(-14px) rotate(-3deg);
+      }
+      .cup .lbl {
+        position: absolute;
+        left: 50%;
+        bottom: -32px;
+        transform: translateX(-50%);
+        white-space: nowrap;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #fff;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 4px 12px;
+        border-radius: 99px;
+        transition: opacity 0.3s;
+      }
+      body.focus .lbl {
+        opacity: 0;
+      }
+      .cup.dim {
+        opacity: 0.2;
+        filter: blur(3px);
+        transform: scale(0.85);
+        pointer-events: none;
+      }
+      .cup.sel {
+        animation: none;
+        z-index: 4;
+        cursor: default;
+      }
+      @keyframes float {
+        50% {
+          margin-top: -10px;
+        }
+      }
+      #panel {
+        position: fixed;
+        right: 4vw;
+        top: 50%;
+        width: min(440px, 46vw);
+        background: var(--panel);
+        border-radius: 28px;
+        padding: 30px;
+        box-shadow: 0 30px 70px rgba(0, 0, 0, 0.3);
+        transform: translate(60px, -50%);
+        opacity: 0;
+        pointer-events: none;
+        transition: transform 0.7s 0.25s cubic-bezier(0.2, 0.9, 0.25, 1), opacity 0.6s 0.25s;
+        z-index: 6;
+        border-top: 8px solid var(--accent);
+      }
+      #panel.show {
+        transform: translate(0, -50%);
+        opacity: 1;
+        pointer-events: auto;
+      }
+      #panel h2 {
+        font-size: 1.9rem;
+        line-height: 1.1;
+      }
+      .tag {
+        color: var(--muted);
+        margin-top: 6px;
+        font-style: italic;
+      }
+      .desc {
+        margin: 14px 0;
+        line-height: 1.55;
+        font-size: 0.95rem;
+      }
+      .stats {
+        display: flex;
+        gap: 10px;
+        margin: 14px 0;
+      }
+      .stat {
+        flex: 1;
+        background: var(--bg);
+        border-radius: 14px;
+        padding: 10px;
+        text-align: center;
+      }
+      .stat b {
+        display: block;
+        font-size: 1.1rem;
+      }
+      .stat span {
+        font-size: 0.7rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .chips i {
+        font-style: normal;
+        font-size: 0.78rem;
+        background: var(--accent);
+        color: #fff;
+        padding: 4px 11px;
+        border-radius: 99px;
+      }
+      .row2 {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 20px;
+      }
+      .price {
+        font-size: 1.8rem;
+        font-weight: 800;
+      }
+      button.cta,
+      button.back {
+        font: inherit;
+        border: 0;
+        cursor: pointer;
+        border-radius: 99px;
+        font-weight: 700;
+        padding: 12px 22px;
+        transition: transform 0.2s;
+      }
+      button.cta {
+        background: var(--ink);
+        color: var(--bg);
+      }
+      button.cta:hover {
+        transform: scale(1.06);
+      }
+      button.back {
+        position: fixed;
+        top: calc(env(safe-area-inset-top, 0px) + 20px);
+        right: 5vw;
+        background: var(--panel);
+        color: var(--ink);
+        z-index: 9;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s;
+      }
+      body.focus button.back {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      @media (max-width: 800px) {
+        .table {
+          height: 35vh;
+        }
+        #row {
+          bottom: calc(35vh - 80px);
+          gap: 15px;
+        }
+        .slot {
+          width: clamp(70px, 18vw, 110px);
+        }
+        #panel {
+          right: auto;
+          left: 4vw;
+          width: 92vw;
+          top: auto;
+          bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
+          transform: translateY(80px);
+          padding: 20px;
+        }
+        #panel.show {
+          transform: none;
+        }
+        #panel h2 {
+          font-size: 1.4rem;
+        }
+        .desc {
+          font-size: 0.85rem;
+          margin: 8px 0;
+        }
+        .stats {
+          margin: 8px 0;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation: none !important;
+          transition-duration: 0.01s !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="glow" id="glow"></div>
+    <header><div class="logo">🧋 Boba Bar</div></header>
+    <button class="back" id="back">← All drinks</button>
+    <div class="hero">
+      <h1>Pick your perfect pearl.</h1>
+      <p>Tap any cup on the table to bring it closer.</p>
+    </div>
+    <div class="table"></div>
+    <div id="row"></div>
+    <aside id="panel" aria-live="polite"></aside>
+    <script>
+      // Fixed paths (removed the invalid backslash)
+      const IMAGES = [
+        "1 boba.png", 
+        "2 boba.png", 
+        "3 boba.png", 
+        "4 boba.png", 
+        "5 boba.png"  
+      ];
+
+      const D = [
+        {
+          n: "Classic Milk Tea",
+          t: "The one that started it all",
+          d: "Roasted Assam black tea shaken with creamy milk and chewy brown-sugar tapioca pearls.",
+          p: "$4.50",
+          cal: 290,
+          sw: "50%",
+          top: "Tapioca pearls",
+          ing: ["Black tea", "Fresh milk", "Brown sugar"],
+          c1: "#d9a679",
+          c2: "#b97c4d",
+          pe: "#2a1608",
+          ac: "#b97c4d",
+        },
+        {
+          n: "Taro Dream",
+          t: "Purple, creamy, and a little nutty",
+          d: "Real taro root blended into velvety milk tea with soft taro cubes at the bottom.",
+          p: "$5.20",
+          cal: 340,
+          sw: "60%",
+          top: "Taro cubes",
+          ing: ["Taro root", "Coconut milk", "Jasmine tea"],
+          c1: "#d9b8f0",
+          c2: "#a67bd1",
+          pe: "#5b3a86",
+          ac: "#9a6bd0",
+        },
+        {
+          n: "Matcha Cloud",
+          t: "Earthy, bright, and cloud-light",
+          d: "Ceremonial-grade matcha whisked with oat milk and topped with silky sea-salt foam.",
+          p: "$5.50",
+          cal: 260,
+          sw: "40%",
+          top: "Salt foam",
+          ing: ["Matcha", "Oat milk", "Sea salt"],
+          c1: "#c9e3a0",
+          c2: "#8fbf5a",
+          pe: "#2f4d16",
+          ac: "#7fb04a",
+        },
+        {
+          n: "Strawberry Pop",
+          t: "Fruity, fizzy, and fun",
+          d: "Fresh strawberry purée over green tea, loaded with juicy popping boba that burst in every sip.",
+          p: "$5.00",
+          cal: 210,
+          sw: "70%",
+          top: "Popping boba",
+          ing: ["Strawberry", "Green tea", "Honey"],
+          c1: "#ffc2cf",
+          c2: "#ef6f8e",
+          pe: "#c42f59",
+          ac: "#ef6f8e",
+        },
+        {
+          n: "Mango Sunrise",
+          t: "A tropical vacation in a cup",
+          d: "Sweet Alphonso mango and passion fruit layered over jasmine tea with lychee jelly.",
+          p: "$5.20",
+          cal: 230,
+          sw: "60%",
+          top: "Lychee jelly",
+          ing: ["Mango", "Passion fruit", "Jasmine tea"],
+          c1: "#ffe27a",
+          c2: "#ffa733",
+          pe: "#ffd2a1",
+          ac: "#f5a020",
+        },
+      ];
+
+      const row = document.getElementById("row"),
+        panel = document.getElementById("panel"),
+        glow = document.getElementById("glow");
+
+      function cupImage(i) {
+        return `<img src="${IMAGES[i]}" alt="${D[i].n}" loading="eager" />`;
+      }
+
+      D.forEach((x, i) => {
+        const s = document.createElement("div");
+        s.className = "slot";
+        s.innerHTML = `<button class="cup" style="--d:${i * 0.5}s" aria-label="${x.n}">${cupImage(i)}<span class="lbl">${x.n}</span></button>`;
+        s.firstChild.onclick = () => open(i);
+        row.appendChild(s);
+      });
+
+      const slots = [...row.children],
+        cups = slots.map((s) => s.firstChild);
+
+      function open(i) {
+        const x = D[i],
+          m = innerWidth <= 800,
+          h = innerHeight;
+        const tx = m ? innerWidth / 2 : innerWidth * 0.27,
+          ty = m ? h * 0.27 : h * 0.5,
+          sc = m ? Math.min((h * 0.3) / 183, 2) : Math.min((h * 0.62) / 183, 2.4);
+
+        document.body.classList.add("focus");
+        document.body.style.setProperty("--accent", x.ac);
+        glow.style.background = `radial-gradient(circle at ${m ? "50% 27%" : "27% 50%"},${x.ac},transparent 60%)`;
+
+        cups.forEach((c, j) => {
+          c.classList.remove("sel", "dim");
+          if (j === i) {
+            const r = slots[j].getBoundingClientRect();
+            c.classList.add("sel");
+            c.style.transform = `translate(${tx - (r.left + r.width / 2)}px,${ty - (r.top + r.height / 2)}px) scale(${sc}) rotate(-6deg)`;
+            const img = c.querySelector("img");
+            if (img) img.style.imageRendering = "auto";
+          } else {
+            c.classList.add("dim");
+            c.style.transform = "";
+          }
+        });
+
+        panel.innerHTML = `<h2>${x.n}</h2><p class="tag">${x.t}</p><p class="desc">${x.d}</p>
+ <div class="stats"><div class="stat"><b>${x.cal}</b><span>Calories</span></div><div class="stat"><b>${x.sw}</b><span>Sweetness</span></div><div class="stat"><b>${x.top}</b><span>Topping</span></div></div>
+ <div class="chips">${x.ing.map((a) => `<i>${a}</i>`).join("")}</div>
+ <div class="row2"><div class="price">${x.p}</div><button class="cta">Add to order</button></div>`;
+
+        panel.classList.remove("show");
+        void panel.offsetWidth;
+        panel.classList.add("show");
+
+        panel.querySelector(".cta").onclick = (e) => {
+          e.target.textContent = "Added ✓";
+          e.target.disabled = true;
+          e.target.style.opacity = "0.7";
+        };
+      }
+
+      function close() {
+        document.body.classList.remove("focus");
+        panel.classList.remove("show");
+        cups.forEach((c) => {
+          c.classList.remove("sel", "dim");
+          c.style.transform = "";
+        });
+      }
+
+      document.getElementById("back").onclick = close;
+      addEventListener("keydown", (e) => {
+        if (e.key === "Escape") close();
+      });
+    </script>
+  </body>
+</html>

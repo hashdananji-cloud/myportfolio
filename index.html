@@ -1,0 +1,1945 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Boba Bar – Bubble Tea Menu &amp; Dessert Pairings</title>
+    <style>
+      :root {
+        --bg: #fff4e6;
+        --ink: #3b2418;
+        --muted: #7a5b4a;
+        --panel: #fffaf3;
+        --wood1: #a8693a;
+        --wood2: #7a4522;
+        --accent: #c68b59;
+        --tint: #d9a679;
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #1d130d;
+          --ink: #fbeedd;
+          --muted: #cdb299;
+          --panel: #2a1b13;
+          --wood1: #6d3f20;
+          --wood2: #43250f;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #1d130d;
+        --ink: #fbeedd;
+        --muted: #cdb299;
+        --panel: #2a1b13;
+        --wood1: #6d3f20;
+        --wood2: #43250f;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+      html {
+        scroll-snap-type: y proximity;
+      }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Poppins", system-ui, sans-serif;
+        position: relative;
+      }
+
+      /* ===== shared site header ===== */
+      .site {
+        position: fixed;
+        top: env(safe-area-inset-top, 0px);
+        left: 0;
+        right: 0;
+        padding: 12px 5vw;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        z-index: 60;
+        pointer-events: none;
+      }
+      .site > * {
+        pointer-events: auto;
+        background: color-mix(in srgb, var(--panel) 82%, transparent);
+        color: var(--ink);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border-radius: 99px;
+      }
+      .logo {
+        font-weight: 800;
+        font-size: 1.2rem;
+        padding: 6px 16px;
+        letter-spacing: 0.5px;
+      }
+      .links {
+        display: flex;
+        gap: 4px;
+        padding: 4px;
+      }
+      .links button {
+        font: inherit;
+        font-size: 0.82rem;
+        font-weight: 600;
+        border: 0;
+        background: none;
+        color: var(--ink);
+        padding: 7px 14px;
+        border-radius: 99px;
+        cursor: pointer;
+        transition: background 0.3s, color 0.3s;
+      }
+      .links button.on {
+        background: var(--ink);
+        color: var(--bg);
+      }
+
+      /* ===== drinks menu ===== */
+      #menu {
+        position: relative;
+        height: 100vh;
+        overflow: hidden;
+        scroll-snap-align: start;
+        background: var(--bg);
+      }
+      .glow {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          circle at 28% 45%,
+          var(--accent),
+          transparent 60%
+        );
+        opacity: 0;
+        transition: opacity 0.8s, background 0.8s;
+        pointer-events: none;
+      }
+      body.focus .glow {
+        opacity: 0.45;
+      }
+      .hero {
+        position: absolute;
+        top: 13vh;
+        left: 0;
+        right: 0;
+        text-align: center;
+        padding: 0 6vw;
+        transition: opacity 0.5s, transform 0.6s;
+      }
+      .hero h1 {
+        font-size: clamp(2rem, 6vw, 4rem);
+        line-height: 1.05;
+        font-weight: 800;
+      }
+      .hero p {
+        margin-top: 12px;
+        color: var(--muted);
+        font-size: clamp(0.95rem, 2vw, 1.15rem);
+      }
+      .seeall {
+        margin-top: 16px;
+        font: inherit;
+        font-weight: 600;
+        font-size: 0.9rem;
+        border: 2px solid var(--ink);
+        background: none;
+        color: var(--ink);
+        border-radius: 99px;
+        padding: 8px 20px;
+        cursor: pointer;
+        transition: background 0.3s, color 0.3s;
+      }
+      .seeall:hover {
+        background: var(--ink);
+        color: var(--bg);
+      }
+      body.focus .hero {
+        opacity: 0;
+        transform: translateY(-30px);
+        pointer-events: none;
+      }
+      .table {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 40vh;
+        background: linear-gradient(180deg, var(--wood1), var(--wood2));
+        box-shadow: inset 0 14px 30px rgba(0, 0, 0, 0.35);
+        border-top: 6px solid rgba(255, 255, 255, 0.12);
+      }
+      .table::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          repeating-linear-gradient(
+            90deg,
+            transparent 0 80px,
+            rgba(0, 0, 0, 0.12) 80px 82px
+          ),
+          repeating-linear-gradient(
+            0deg,
+            transparent 0 22px,
+            rgba(255, 255, 255, 0.04) 22px 24px
+          );
+      }
+      #row {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: calc(40vh - 100px);
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        gap: clamp(10px, 3vw, 40px);
+        padding: 0 2vw;
+      }
+      .slot {
+        width: clamp(80px, 18vw, 160px);
+        aspect-ratio: 120/200;
+        position: relative;
+      }
+      .cup {
+        position: absolute;
+        inset: 0;
+        border: 0;
+        background: none;
+        cursor: pointer;
+        transition: transform 0.9s cubic-bezier(0.2, 0.9, 0.25, 1.1),
+          opacity 0.5s, filter 0.5s;
+        animation: float 4s ease-in-out infinite;
+        animation-delay: var(--d);
+        -webkit-tap-highlight-color: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .cup img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        filter: drop-shadow(0 15px 15px rgba(0, 0, 0, 0.45));
+        display: block;
+        pointer-events: none;
+      }
+      .cup:hover:not(.sel) {
+        transform: translateY(-14px) rotate(-3deg);
+      }
+      .cup .lbl {
+        position: absolute;
+        left: 50%;
+        bottom: -32px;
+        transform: translateX(-50%);
+        white-space: nowrap;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #fff;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 4px 12px;
+        border-radius: 99px;
+        transition: opacity 0.3s;
+      }
+      body.focus .lbl {
+        opacity: 0;
+      }
+      .cup.dim {
+        opacity: 0.2;
+        filter: blur(3px);
+        transform: scale(0.85);
+        pointer-events: none;
+      }
+      .cup.sel {
+        animation: none;
+        z-index: 4;
+        cursor: default;
+      }
+      @keyframes float {
+        50% {
+          margin-top: -10px;
+        }
+      }
+      #panel {
+        position: absolute;
+        right: 4vw;
+        top: 50%;
+        width: min(440px, 46vw);
+        background: var(--panel);
+        border-radius: 28px;
+        padding: 30px;
+        box-shadow: 0 30px 70px rgba(0, 0, 0, 0.3);
+        transform: translate(60px, -50%);
+        opacity: 0;
+        pointer-events: none;
+        transition: transform 0.7s 0.25s cubic-bezier(0.2, 0.9, 0.25, 1),
+          opacity 0.6s 0.25s;
+        z-index: 6;
+        border-top: 8px solid var(--accent);
+      }
+      #panel.show {
+        transform: translate(0, -50%);
+        opacity: 1;
+        pointer-events: auto;
+      }
+      #panel h2 {
+        font-size: 1.9rem;
+        line-height: 1.1;
+      }
+      .tag {
+        color: var(--muted);
+        margin-top: 6px;
+        font-style: italic;
+      }
+      .desc {
+        margin: 14px 0;
+        line-height: 1.55;
+        font-size: 0.95rem;
+      }
+      .stats {
+        display: flex;
+        gap: 10px;
+        margin: 14px 0;
+      }
+      .stat {
+        flex: 1;
+        background: var(--bg);
+        border-radius: 14px;
+        padding: 10px;
+        text-align: center;
+      }
+      .stat b {
+        display: block;
+        font-size: 1.1rem;
+      }
+      .stat span {
+        font-size: 0.7rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .chips i {
+        font-style: normal;
+        font-size: 0.78rem;
+        background: var(--accent);
+        color: #fff;
+        padding: 4px 11px;
+        border-radius: 99px;
+      }
+      #panel .row2 {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 20px;
+      }
+      #panel .price {
+        font-size: 1.8rem;
+        font-weight: 800;
+      }
+      #panel button.cta,
+      button.back {
+        font: inherit;
+        border: 0;
+        cursor: pointer;
+        border-radius: 99px;
+        font-weight: 700;
+        padding: 12px 22px;
+        transition: transform 0.2s;
+      }
+      #panel button.cta {
+        background: var(--ink);
+        color: var(--bg);
+      }
+      #panel button.cta:hover {
+        transform: scale(1.06);
+      }
+      button.back {
+        position: absolute;
+        top: calc(env(safe-area-inset-top, 0px) + 74px);
+        right: 5vw;
+        background: var(--panel);
+        color: var(--ink);
+        z-index: 9;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s;
+      }
+      body.focus button.back {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      /* ===== dessert pairings ===== */
+      #pairings {
+        position: relative;
+      }
+      .snap {
+        position: absolute;
+        left: 0;
+        width: 1px;
+        height: 1px;
+        scroll-snap-align: start;
+      }
+      #stage {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow: hidden;
+        color: #fff;
+        background-color: color-mix(in srgb, var(--accent) 62%, #140a05);
+        transition: background-color 0.9s;
+      }
+      .vig {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          90deg,
+          rgba(0, 0, 0, 0.72),
+          rgba(0, 0, 0, 0.25) 50%,
+          transparent 75%
+        );
+        pointer-events: none;
+      }
+      #bgart {
+        position: absolute;
+        left: 14vw;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 95vh;
+        line-height: 1;
+        filter: blur(26px);
+        opacity: 0.5;
+        pointer-events: none;
+        white-space: nowrap;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        width: 50vw;
+        height: 80vh;
+      }
+      #bgart.in {
+        animation: fade 0.9s both;
+      }
+      @keyframes fade {
+        from { opacity: 0; }
+        to { opacity: 0.5; }
+      }
+
+      /* No white border */
+      .art {
+        position: absolute;
+        left: 0;
+        top: 0;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+        overflow: hidden;
+        will-change: transform;
+        transition: background 0.8s;
+        background-size: cover;
+        background-position: center;
+      }
+      .art span {
+        line-height: 1;
+        filter: drop-shadow(0 14px 14px rgba(0, 0, 0, 0.35));
+        pointer-events: none;
+        font-size: 3rem;
+      }
+
+      #txt {
+        position: absolute;
+        z-index: 20;
+        left: 5vw;
+        width: min(40vw, 520px);
+        top: 50%;
+        transform: translateY(-50%);
+        text-align: center;
+      }
+      #txt.in {
+        animation: rise 0.7s cubic-bezier(0.2, 0.9, 0.25, 1) both;
+      }
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(calc(-50% + 36px));
+        }
+        to {
+          opacity: 1;
+          transform: translateY(-50%);
+        }
+      }
+      .eb {
+        display: inline-block;
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        background: var(--accent);
+        padding: 5px 14px;
+        border-radius: 99px;
+        transition: background 0.8s;
+      }
+      #txt h1 {
+        font-size: clamp(2rem, 4.8vw, 4.2rem);
+        line-height: 1.02;
+        font-weight: 800;
+        text-transform: uppercase;
+        margin: 14px 0 20px;
+      }
+      #txt p {
+        font-size: clamp(0.95rem, 1.7vw, 1.3rem);
+        line-height: 1.55;
+        opacity: 0.95;
+      }
+      .pn {
+        margin-top: 14px;
+        font-size: 0.88rem;
+        opacity: 0.85;
+        font-style: italic;
+      }
+      #stage .row2 {
+        display: flex;
+        gap: 18px;
+        align-items: center;
+        justify-content: center;
+        margin-top: 22px;
+      }
+      #stage .price {
+        font-size: 1.7rem;
+        font-weight: 800;
+      }
+      #stage .cta {
+        font: inherit;
+        font-weight: 700;
+        border: 0;
+        cursor: pointer;
+        border-radius: 99px;
+        padding: 11px 24px;
+        background: #fff;
+        color: #2a1608;
+        transition: transform 0.2s;
+      }
+      #stage .cta:hover {
+        transform: scale(1.06);
+      }
+      #nav {
+        position: absolute;
+        z-index: 25;
+        left: 5vw;
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 22px);
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+        max-width: 55vw;
+      }
+      #nav button {
+        font: inherit;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        border-radius: 99px;
+        padding: 6px 14px;
+        cursor: pointer;
+        transition: background 0.3s, color 0.3s;
+      }
+      #nav button.on {
+        background: #fff;
+        color: #2a1608;
+      }
+      #cnt {
+        position: absolute;
+        z-index: 25;
+        right: 5vw;
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 26px);
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+
+      /* Updated cupwrap for real images */
+      .cupwrap {
+        height: min(22vh, 210px);
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: center;
+      }
+      .cupwrap img {
+        height: 100%;
+        width: auto;
+        object-fit: contain;
+        filter: drop-shadow(0 14px 14px rgba(0, 0, 0, 0.4));
+        animation: bob 4s ease-in-out infinite;
+      }
+      @keyframes bob {
+        50% {
+          transform: translateY(-8px) rotate(-2deg);
+        }
+      }
+
+      /* ===== outlet experience ===== */
+      #outlet {
+        position: relative;
+        height: 100vh;
+        overflow: hidden;
+        scroll-snap-align: start;
+        color: #fff;
+        --oac: #c68b59;
+        background-color: color-mix(in srgb, var(--oac) 42%, #140a05);
+        transition: background-color 0.9s;
+        touch-action: pan-y;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+
+      /* Blurred background image */
+      #o-bg-blur {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center;
+        filter: blur(40px) scale(1.1);
+        opacity: 0.6;
+        z-index: 0;
+        transition: opacity 0.8s, background-image 0.8s;
+      }
+
+      .o-shade {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: linear-gradient(
+          180deg,
+          rgba(0, 0, 0, 0.55),
+          rgba(0, 0, 0, 0.1) 55%,
+          rgba(0, 0, 0, 0.45)
+        );
+        z-index: 1;
+      }
+      .o-ring {
+        position: absolute;
+        border: 2px dashed rgba(255, 255, 255, 0.28);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 1;
+      }
+      .o-head {
+        position: absolute;
+        top: calc(env(safe-area-inset-top, 0px) + 74px);
+        left: 0;
+        right: 0;
+        text-align: center;
+        padding: 0 6vw;
+        z-index: 5;
+        pointer-events: none;
+      }
+      .o-head .eb {
+        background: var(--oac);
+      }
+      .o-head h2 {
+        font-size: clamp(1.7rem, 4.6vw, 3.4rem);
+        line-height: 1.05;
+        font-weight: 800;
+        text-transform: uppercase;
+        margin: 12px 0 8px;
+      }
+      .o-head p {
+        font-size: clamp(0.85rem, 1.6vw, 1.1rem);
+        opacity: 0.85;
+      }
+      #odeck {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+      }
+
+      /* Outlet cards: the outlet photo is the card background */
+      .o-card {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: var(--cw);
+        height: var(--ch);
+        background-color: var(--c);
+        background-image:
+          linear-gradient(
+            180deg,
+            rgba(0, 0, 0, 0.05) 25%,
+            rgba(0, 0, 0, 0.82) 100%
+          ),
+          var(--img);
+        background-size: cover;
+        background-position: center;
+        color: #fff;
+        border-radius: 26px;
+        border-top: 8px solid var(--c);
+        padding: 18px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        text-align: center;
+        gap: 8px;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+        cursor: grab;
+        will-change: transform;
+        overflow: hidden;
+      }
+      .o-card h3 {
+        font-size: clamp(1rem, 2.2vw, 1.25rem);
+        line-height: 1.15;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+      }
+      .o-card p {
+        font-size: 0.84rem;
+        line-height: 1.45;
+        color: rgba(255, 255, 255, 0.92);
+        text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+      }
+      .o-card i {
+        font-style: normal;
+        font-size: 0.72rem;
+        font-weight: 600;
+        background: var(--c);
+        color: #fff;
+        padding: 3px 11px;
+        border-radius: 99px;
+      }
+      .o-ctl {
+        position: absolute;
+        z-index: 10;
+        left: 0;
+        right: 0;
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding: 0 5vw;
+      }
+      .o-ctl button {
+        font: inherit;
+        font-weight: 700;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        border-radius: 99px;
+        cursor: pointer;
+        transition: transform 0.2s, background 0.3s;
+      }
+      .o-ctl .arr {
+        width: 42px;
+        height: 42px;
+        font-size: 1.1rem;
+      }
+      .o-ctl .arr:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+      .o-ctl .go {
+        background: #fff;
+        color: #2a1608;
+        padding: 11px 22px;
+      }
+      .o-ctl .go:hover {
+        transform: scale(1.06);
+      }
+      #odots {
+        display: flex;
+        gap: 7px;
+      }
+      #odots b {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.4);
+        transition: width 0.3s, background 0.3s;
+      }
+      #odots b.on {
+        width: 22px;
+        border-radius: 99px;
+        background: #fff;
+      }
+
+      /* ===== outlet locations map (white background) ===== */
+      #locations {
+        position: relative;
+        min-height: 100vh;
+        background: #ffffff;
+        color: #3b2418;
+        scroll-snap-align: start;
+        padding: 70px 6vw 60px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: clamp(24px, 5vw, 70px);
+        align-items: center;
+      }
+      #locations .l-info .eb {
+        display: inline-block;
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        background: #c68b59;
+        color: #fff;
+        padding: 5px 14px;
+        border-radius: 99px;
+      }
+      #locations h2 {
+        font-size: clamp(1.8rem, 4vw, 3rem);
+        line-height: 1.05;
+        font-weight: 800;
+        text-transform: uppercase;
+        margin: 14px 0 10px;
+      }
+      #locations .l-sub {
+        color: #7a5b4a;
+        line-height: 1.55;
+        margin-bottom: 20px;
+      }
+      #lcities {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 20px;
+      }
+      #lcities button {
+        font: inherit;
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        color: #3b2418;
+        background: #fff;
+        border: 2px solid #e8d5c1;
+        border-radius: 99px;
+        padding: 7px 15px;
+        transition: all 0.25s;
+      }
+      #lcities button:hover {
+        border-color: #b97c4d;
+      }
+      #lcities button.on {
+        background: #3b2418;
+        border-color: #3b2418;
+        color: #fff;
+      }
+      #lcard {
+        background: #fffaf3;
+        border-radius: 22px;
+        padding: 22px 24px;
+        border-top: 6px solid #b97c4d;
+        box-shadow: 0 14px 40px rgba(59, 36, 24, 0.12);
+        animation: lrise 0.5s both;
+      }
+      @keyframes lrise {
+        from { opacity: 0; transform: translateY(14px); }
+        to { opacity: 1; transform: none; }
+      }
+      #lcard h3 {
+        font-size: 1.4rem;
+      }
+      #lcard .lr {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+        font-size: 0.92rem;
+        line-height: 1.45;
+        color: #5d4334;
+      }
+      #lcard .lr b {
+        min-width: 74px;
+        color: #3b2418;
+      }
+      #lcard .lbtn {
+        margin-top: 16px;
+        font: inherit;
+        font-weight: 700;
+        border: 0;
+        cursor: pointer;
+        background: #3b2418;
+        color: #fff;
+        border-radius: 99px;
+        padding: 10px 20px;
+        transition: transform 0.2s;
+      }
+      #lcard .lbtn:hover {
+        transform: scale(1.05);
+      }
+      .l-mapwrap {
+        display: flex;
+        justify-content: center;
+      }
+      #omap {
+        width: 100%;
+        max-width: 460px;
+        max-height: 80vh;
+        height: auto;
+        overflow: visible;
+      }
+      #omap .land {
+        fill: #f7e9d9;
+        stroke: #c68b59;
+        stroke-width: 1.6;
+        stroke-linejoin: round;
+      }
+      #omap .pin {
+        cursor: pointer;
+      }
+      #omap .pulse {
+        fill: #c68b59;
+        opacity: 0.35;
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: lpulse 2s ease-out infinite;
+      }
+      #omap .dot {
+        fill: #b97c4d;
+        stroke: #fff;
+        stroke-width: 1.5;
+        transition: fill 0.3s;
+      }
+      #omap .pin.on .dot,
+      #omap .pin.on .pulse {
+        fill: #e0443e;
+      }
+      #omap text {
+        font: 700 8.5px "Poppins", system-ui, sans-serif;
+        fill: #3b2418;
+        paint-order: stroke;
+        stroke: #fff;
+        stroke-width: 3px;
+        pointer-events: none;
+      }
+      #omap .pin.on text {
+        fill: #e0443e;
+      }
+      @keyframes lpulse {
+        from { transform: scale(0.6); opacity: 0.5; }
+        to { transform: scale(2.6); opacity: 0; }
+      }
+
+      /* ===== mobile ===== */
+      @media (max-width: 800px) {
+        .logo {
+          font-size: 1rem;
+          padding: 5px 12px;
+        }
+        .links button {
+          font-size: 0.74rem;
+          padding: 6px 10px;
+        }
+        .table {
+          height: 35vh;
+        }
+        #row {
+          bottom: calc(35vh - 80px);
+          gap: 15px;
+        }
+        .slot {
+          width: clamp(70px, 18vw, 110px);
+        }
+        #panel {
+          right: auto;
+          left: 4vw;
+          width: 92vw;
+          top: auto;
+          bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
+          transform: translateY(80px);
+          padding: 20px;
+        }
+        #panel.show {
+          transform: none;
+        }
+        #panel h2 {
+          font-size: 1.4rem;
+        }
+        .desc {
+          font-size: 0.85rem;
+          margin: 8px 0;
+        }
+        .stats {
+          margin: 8px 0;
+        }
+        #txt {
+          left: 5vw;
+          right: 5vw;
+          width: auto;
+          top: 52%;
+          transform: none;
+        }
+        #txt.in {
+          animation: riseM 0.7s cubic-bezier(0.2, 0.9, 0.25, 1) both;
+        }
+        @keyframes riseM {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: none;
+          }
+        }
+        #txt h1 {
+          font-size: 1.7rem;
+          margin: 10px 0;
+        }
+        #txt p {
+          font-size: 0.88rem;
+          line-height: 1.45;
+        }
+        .pn {
+          font-size: 0.78rem;
+          margin-top: 8px;
+        }
+        #stage .price {
+          font-size: 1.3rem;
+        }
+        #stage .cta {
+          padding: 9px 18px;
+          font-size: 0.85rem;
+        }
+        #stage .row2 {
+          margin-top: 12px;
+        }
+        #nav {
+          max-width: none;
+          right: 5vw;
+          bottom: calc(env(safe-area-inset-bottom, 0px) + 40px);
+        }
+        #nav button {
+          font-size: 0.66rem;
+          padding: 5px 9px;
+        }
+        #cnt {
+          right: auto;
+          left: 5vw;
+          bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+          font-size: 0.75rem;
+        }
+        #bgart {
+          left: -10vw;
+          font-size: 60vh;
+          width: 80vw;
+        }
+        .cupwrap {
+          position: absolute;
+          left: -1vw;
+          top: -17vh;
+          height: 15vh;
+          margin: 0;
+          z-index: 22;
+        }
+        .o-head p {
+          display: none;
+        }
+        .o-card {
+          padding: 14px;
+          border-radius: 22px;
+        }
+        .o-card p {
+          font-size: 0.78rem;
+        }
+        .o-ctl .go {
+          padding: 9px 16px;
+          font-size: 0.82rem;
+        }
+        #locations {
+          grid-template-columns: 1fr;
+          padding: 50px 6vw 50px;
+          gap: 22px;
+        }
+        #omap {
+          max-width: 340px;
+        }
+        #lcard {
+          padding: 18px;
+        }
+        #lcard .lr b {
+          min-width: 64px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation: none !important;
+          transition-duration: 0.01s !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site">
+      <div class="logo">🧋 Boba Bar</div>
+      <nav class="links">
+        <button id="lnkMenu" class="on">Drinks</button
+        ><button id="lnkPair">Pairings</button
+        ><button id="lnkOut">Outlet</button>
+      </nav>
+    </header>
+
+    <!-- ===== SECTION 1: DRINKS MENU ===== -->
+    <section id="menu">
+      <div class="glow" id="glow"></div>
+      <button class="back" id="back">← All drinks</button>
+      <div class="hero">
+        <h1>Pick your perfect pearl.</h1>
+        <p>Tap any cup on the table to bring it closer.</p>
+        <button class="seeall" id="seeall">
+          🍰 See which dessert pairs best ↓
+        </button>
+      </div>
+      <div class="table"></div>
+      <div id="row"></div>
+      <aside id="panel" aria-live="polite"></aside>
+    </section>
+
+    <!-- ===== SECTION 2: DESSERT PAIRINGS ===== -->
+    <section id="pairings">
+      <div id="stage">
+        <div id="bgart"></div>
+        <div class="vig"></div>
+        <div id="txt"></div>
+        <div id="nav"></div>
+        <div id="cnt"></div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 3: OUTLET EXPERIENCE ===== -->
+    <section id="outlet">
+      <div id="o-bg-blur"></div>
+      <div class="o-shade"></div>
+      <div class="o-ring" id="oring"></div>
+      <div class="o-head">
+        <span class="eb">Visit us</span>
+        <h2>Get our outlet experience</h2>
+        <p>Drag, swipe or use the arrows to take a spin around the café.</p>
+      </div>
+      <div id="odeck"></div>
+      <div class="o-ctl">
+        <button class="arr" id="oprev" aria-label="Previous">←</button>
+        <div id="odots"></div>
+        <button class="arr" id="onext" aria-label="Next">→</button>
+        <button class="go" id="octa">Find an outlet</button>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 4: OUTLET LOCATIONS MAP ===== -->
+    <section id="locations">
+      <div class="l-info">
+        <span class="eb">Our outlets</span>
+        <h2>Find us across Sri Lanka</h2>
+        <p class="l-sub">
+          Eight outlets and growing. Tap a city on the list or the map to see
+          opening hours and contact details.
+        </p>
+        <div id="lcities"></div>
+        <div id="lcard"></div>
+      </div>
+      <div class="l-mapwrap">
+        <svg
+          id="omap"
+          viewBox="0 0 260 440"
+          role="img"
+          aria-label="Map of Sri Lanka showing outlet locations"
+        ></svg>
+      </div>
+    </section>
+
+    <script>
+      /* ---------- shared drink data ---------- */
+      const BOBA_IMAGES = [
+        "1 boba.png",
+        "2 boba.png",
+        "3 boba.png",
+        "4 boba.png",
+        "5 boba.png",
+      ];
+      const D = [
+        {
+          n: "Classic Milk Tea",
+          t: "The one that started it all",
+          d: "Roasted Assam black tea shaken with creamy milk and chewy brown-sugar tapioca pearls.",
+          p: "$4.50",
+          cal: 290,
+          sw: "50%",
+          top: "Tapioca pearls",
+          ing: ["Black tea", "Fresh milk", "Brown sugar"],
+          c1: "#d9a679",
+          c2: "#b97c4d",
+          pe: "#2a1608",
+          ac: "#b97c4d",
+        },
+        {
+          n: "Taro Dream",
+          t: "Purple, creamy, and a little nutty",
+          d: "Real taro root blended into velvety milk tea with soft taro cubes at the bottom.",
+          p: "$5.20",
+          cal: 340,
+          sw: "60%",
+          top: "Taro cubes",
+          ing: ["Taro root", "Coconut milk", "Jasmine tea"],
+          c1: "#d9b8f0",
+          c2: "#a67bd1",
+          pe: "#5b3a86",
+          ac: "#9a6bd0",
+        },
+        {
+          n: "Matcha Cloud",
+          t: "Earthy, bright, and cloud-light",
+          d: "Ceremonial-grade matcha whisked with oat milk and topped with silky sea-salt foam.",
+          p: "$5.50",
+          cal: 260,
+          sw: "40%",
+          top: "Salt foam",
+          ing: ["Matcha", "Oat milk", "Sea salt"],
+          c1: "#c9e3a0",
+          c2: "#8fbf5a",
+          pe: "#2f4d16",
+          ac: "#7fb04a",
+        },
+        {
+          n: "Strawberry Pop",
+          t: "Fruity, fizzy, and fun",
+          d: "Fresh strawberry purée over green tea, loaded with juicy popping boba that burst in every sip.",
+          p: "$5.00",
+          cal: 210,
+          sw: "70%",
+          top: "Popping boba",
+          ing: ["Strawberry", "Green tea", "Honey"],
+          c1: "#ffc2cf",
+          c2: "#ef6f8e",
+          pe: "#c42f59",
+          ac: "#ef6f8e",
+        },
+        {
+          n: "Mango Sunrise",
+          t: "A tropical vacation in a cup",
+          d: "Sweet Alphonso mango and passion fruit layered over jasmine tea with lychee jelly.",
+          p: "$5.20",
+          cal: 230,
+          sw: "60%",
+          top: "Lychee jelly",
+          ing: ["Mango", "Passion fruit", "Jasmine tea"],
+          c1: "#ffe27a",
+          c2: "#ffa733",
+          pe: "#ffd2a1",
+          ac: "#f5a020",
+        },
+      ];
+
+      const gid = (id) => document.getElementById(id);
+      let wrapTop = innerHeight;
+      function toMenu() {
+        scrollTo({ top: 0, behavior: "smooth" });
+      }
+      function toPair() {
+        scrollTo({ top: gid("pairings").offsetTop, behavior: "smooth" });
+      }
+      function toOutlet() {
+        scrollTo({ top: gid("outlet").offsetTop, behavior: "smooth" });
+      }
+      gid("lnkMenu").onclick = toMenu;
+      gid("lnkPair").onclick = toPair;
+      gid("lnkOut").onclick = toOutlet;
+      gid("seeall").onclick = toPair;
+
+      /* ---------- drinks menu ---------- */
+      (function () {
+        const row = gid("row"),
+          panel = gid("panel"),
+          glow = gid("glow"),
+          menu = gid("menu");
+        D.forEach((x, i) => {
+          const s = document.createElement("div");
+          s.className = "slot";
+          s.innerHTML = `<button class="cup" style="--d:${i * 0.5}s" aria-label="${x.n}"><img src="${BOBA_IMAGES[i]}" alt="${x.n}" loading="eager" /><span class="lbl">${x.n}</span></button>`;
+          s.firstChild.onclick = () => open(i);
+          row.appendChild(s);
+        });
+        const slots = [...row.children],
+          cups = slots.map((s) => s.firstChild);
+        function open(i) {
+          const x = D[i],
+            m = innerWidth <= 800,
+            h = innerHeight,
+            mr = menu.getBoundingClientRect();
+          const tx = mr.left + (m ? innerWidth / 2 : innerWidth * 0.27),
+            ty = mr.top + (m ? h * 0.27 : h * 0.5),
+            sc = m
+              ? Math.min((h * 0.3) / 183, 2)
+              : Math.min((h * 0.62) / 183, 2.4);
+          document.body.classList.add("focus");
+          menu.style.setProperty("--accent", x.ac);
+          glow.style.background = `radial-gradient(circle at ${m ? "50% 27%" : "27% 50%"},${x.ac},transparent 60%)`;
+          cups.forEach((c, j) => {
+            c.classList.remove("sel", "dim");
+            if (j === i) {
+              const r = slots[j].getBoundingClientRect();
+              c.classList.add("sel");
+              c.style.transform = `translate(${tx - (r.left + r.width / 2)}px,${ty - (r.top + r.height / 2)}px) scale(${sc}) rotate(-6deg)`;
+              const img = c.querySelector("img");
+              if (img) img.style.imageRendering = "auto";
+            } else {
+              c.classList.add("dim");
+              c.style.transform = "";
+            }
+          });
+          panel.innerHTML = `<h2>${x.n}</h2><p class="tag">${x.t}</p><p class="desc">${x.d}</p>
+<div class="stats"><div class="stat"><b>${x.cal}</b><span>Calories</span></div><div class="stat"><b>${x.sw}</b><span>Sweetness</span></div><div class="stat"><b>${x.top}</b><span>Topping</span></div></div>
+<div class="chips">${x.ing.map((a) => `<i>${a}</i>`).join("")}</div>
+<div class="row2"><div class="price">${x.p}</div><button class="cta">Add to order</button></div>`;
+          panel.classList.remove("show");
+          void panel.offsetWidth;
+          panel.classList.add("show");
+          panel.querySelector(".cta").onclick = (e) => {
+            e.target.textContent = "Added ✓";
+            e.target.disabled = true;
+            e.target.style.opacity = ".7";
+          };
+        }
+        function close() {
+          document.body.classList.remove("focus");
+          panel.classList.remove("show");
+          cups.forEach((c) => {
+            c.classList.remove("sel", "dim");
+            c.style.transform = "";
+          });
+        }
+        gid("back").onclick = close;
+        addEventListener("keydown", (e) => {
+          if (e.key === "Escape") close();
+        });
+      })();
+
+      /* ---------- dessert pairings ---------- */
+      (function () {
+        const F = [
+          {
+            n: "Classic Milk Tea",
+            tint: "#e6b98c",
+            ac: "#b97c4d",
+            ds: [
+              {
+                n: "New York Cheesecake",
+                e: "🍰",
+                img: "dessert-cheesecake.png",
+                d: "Dense, tangy cheesecake on a buttery graham crust.",
+                pair: "Tangy cream cuts through the brown-sugar sweetness.",
+                p: "$5.80",
+              },
+              {
+                n: "Pearl Cake",
+                e: "🎂",
+                img: "dessert-pearl-cake.png",
+                d: "Soft sponge layered with caramel tapioca pearls and whipped cream.",
+                pair: "Doubles down on the chewy pearl texture.",
+                p: "$6.20",
+              },
+              {
+                n: "Egg Tart",
+                e: "🥧",
+                img: "dessert-egg-tart.png",
+                d: "Flaky pastry shell with a silky baked custard centre.",
+                pair: "Roasted tea and warm custard are a classic duo.",
+                p: "$3.50",
+              },
+            ],
+          },
+          {
+            n: "Taro Dream",
+            tint: "#d9b8f0",
+            ac: "#9a6bd0",
+            ds: [
+              {
+                n: "Taro Mochi",
+                e: "🍡",
+                img: "dessert-taro-mochi.png",
+                d: "Chewy rice cake filled with sweet taro paste.",
+                pair: "Echoes the nutty taro flavour in a new texture.",
+                p: "$4.20",
+              },
+              {
+                n: "Coconut Pudding",
+                e: "🍮",
+                img: "dessert-coconut-pudding.png",
+                d: "Light, wobbly coconut milk pudding.",
+                pair: "Coconut and taro share a creamy tropical note.",
+                p: "$4.00",
+              },
+              {
+                n: "Ube Swiss Roll",
+                e: "🧁",
+                img: "dessert-ube-roll.png",
+                d: "Fluffy purple-yam sponge rolled with vanilla cream.",
+                pair: "Soft sponge keeps the drink the star.",
+                p: "$4.80",
+              },
+            ],
+          },
+          {
+            n: "Matcha Cloud",
+            tint: "#c9e3a0",
+            ac: "#7fb04a",
+            ds: [
+              {
+                n: "Basque Cheesecake",
+                e: "🍰",
+                img: "dessert-basque-cheesecake.png",
+                d: "Burnt-top, creamy-centre cheesecake.",
+                pair: "Caramelised edges balance the earthy matcha.",
+                p: "$6.00",
+              },
+              {
+                n: "Red Bean Dorayaki",
+                e: "🥞",
+                img: "dessert-dorayaki.png",
+                d: "Honey pancakes sandwiching sweet red bean paste.",
+                pair: "A traditional Japanese match for green tea.",
+                p: "$4.50",
+              },
+              {
+                n: "Black Sesame Cookie",
+                e: "🍪",
+                img: "dessert-sesame-cookie.png",
+                d: "Crisp, nutty cookie with a toasted finish.",
+                pair: "Toasty sesame loves the sea-salt foam.",
+                p: "$3.20",
+              },
+            ],
+          },
+          {
+            n: "Strawberry Pop",
+            tint: "#ffc2cf",
+            ac: "#ef6f8e",
+            ds: [
+              {
+                n: "Strawberry Shortcake",
+                e: "🍓",
+                img: "dessert-shortcake.png",
+                d: "Vanilla sponge, fresh cream and juicy strawberries.",
+                pair: "Fruit on fruit, with cream to soften the fizz.",
+                p: "$5.90",
+              },
+              {
+                n: "Rose Macarons",
+                e: "🍬",
+                img: "dessert-macarons.png",
+                d: "Three delicate macarons with rose-cream filling.",
+                pair: "Floral and berry notes complement each other.",
+                p: "$5.20",
+              },
+            ],
+          },
+          {
+            n: "Mango Sunrise",
+            tint: "#ffe27a",
+            ac: "#f5a020",
+            ds: [
+              {
+                n: "Mango Sticky Rice",
+                e: "🥭",
+                img: "dessert-mango-rice.png",
+                d: "Sweet coconut sticky rice with fresh mango.",
+                pair: "Tropical on tropical, a vacation pairing.",
+                p: "$5.50",
+              },
+              {
+                n: "Coconut Panna Cotta",
+                e: "🍮",
+                img: "dessert-panna-cotta.png",
+                d: "Silky coconut panna cotta with passion-fruit glaze.",
+                pair: "Cool cream mellows the tart passion fruit.",
+                p: "$4.80",
+              },
+              {
+                n: "Lemon Tart",
+                e: "🥧",
+                img: "dessert-lemon-tart.png",
+                d: "Buttery shell with bright lemon curd.",
+                pair: "Citrus zing lifts the sweet Alphonso mango.",
+                p: "$4.60",
+              },
+            ],
+          },
+        ];
+        const S = [];
+        F.forEach((f, fi) => f.ds.forEach((d, di) => S.push({ f, fi, d, di })));
+        const N = S.length,
+          wrap = gid("pairings"),
+          stage = gid("stage"),
+          txt = gid("txt"),
+          nav = gid("nav"),
+          cnt = gid("cnt"),
+          bg = gid("bgart");
+        let w,
+          h,
+          mob,
+          R0,
+          U,
+          K,
+          cur = 0,
+          act = -1;
+
+        // Build the circular artwork with image backgrounds
+        const arts = S.map((s, i) => {
+          const a = document.createElement("div");
+          a.className = "art";
+          a.style.backgroundImage = `url('${s.d.img}')`;
+          a.setAttribute("role", "button");
+          a.setAttribute("aria-label", s.d.n);
+
+          // Fallback to emoji if image fails to load
+          const testImg = new Image();
+          testImg.onerror = () => {
+            a.style.backgroundImage = "none";
+            a.innerHTML = `<span>${s.d.e}</span>`;
+          };
+          testImg.src = s.d.img;
+
+          a.onclick = () => go(i);
+          stage.appendChild(a);
+          return a;
+        });
+
+        const firstOf = [];
+        S.forEach((s, i) => {
+          if (s.di === 0) firstOf[s.fi] = i;
+          const k = document.createElement("div");
+          k.className = "snap";
+          k.dataset.i = i;
+          wrap.appendChild(k);
+        });
+        F.forEach((f, fi) => {
+          const b = document.createElement("button");
+          b.textContent = f.n;
+          b.onclick = () => go(firstOf[fi]);
+          nav.appendChild(b);
+        });
+        const navb = [...nav.children];
+        function go(i) {
+          scrollTo({ top: wrapTop + i * U, behavior: "smooth" });
+        }
+        function keys() {
+          return mob
+            ? [
+                [0.5 * w, -0.3 * h, 0.5, 8, 0],
+                [0.12 * w, 0, 0.5, 3, 0.9],
+                [0.5 * w, 0.27 * h, 1, 0, 1],
+                [1 * w, 0.3 * h, 0.7, 5, 0.9],
+                [1.08 * w, 0.55 * h, 0.5, 5, 0.7],
+                [1.1 * w, 0.8 * h, 0.4, 8, 0],
+              ]
+            : [
+                [0.9 * w, -0.35 * h, 0.5, 8, 0],
+                [0.88 * w, 0, 0.55, 3, 0.9],
+                [0.7 * w, 0.5 * h, 1, 0, 1],
+                [0.99 * w, 0.52 * h, 0.75, 5, 0.95],
+                [0.93 * w, 1.02 * h, 0.55, 5, 0.8],
+                [0.93 * w, 1.4 * h, 0.4, 8, 0],
+              ];
+        }
+        function layout() {
+          w = innerWidth;
+          h = innerHeight;
+          mob = w <= 800;
+          U = h * 0.7;
+          R0 = mob ? Math.min(w * 0.36, h * 0.2) : Math.min(h * 0.42, w * 0.24);
+          wrap.style.height = (N - 1) * U + h + "px";
+          wrapTop = wrap.offsetTop;
+          [...wrap.querySelectorAll(".snap")].forEach(
+            (k) => (k.style.top = k.dataset.i * U + "px"),
+          );
+          K = keys();
+          arts.forEach((a) => {
+            a.style.width = a.style.height = 2 * R0 + "px";
+            if (a.firstChild) {
+              a.firstChild.style.fontSize = R0 * 1.15 + "px";
+            }
+          });
+          update(cur);
+        }
+        function update(p) {
+          arts.forEach((a, i) => {
+            const d = i - p,
+              t = Math.max(-2, Math.min(3, d)) + 2,
+              k = Math.min(4, Math.floor(t)),
+              f = t - k,
+              A = K[k],
+              B = K[k + 1];
+            const v = A.map((x, j) => x + (B[j] - x) * f);
+            a.style.transform = `translate(${v[0] - R0}px,${v[1] - R0}px) scale(${v[2]})`;
+            a.style.filter = v[3] > 0.1 ? `blur(${v[3]}px)` : "none";
+            a.style.opacity = v[4];
+            a.style.visibility =
+              v[4] < 0.02 || Math.abs(d) > 3 ? "hidden" : "visible";
+            a.style.zIndex = 20 - Math.round(Math.abs(d) * 4);
+            a.style.pointerEvents =
+              Math.abs(d) < 2.5 && d !== 0 ? "auto" : "none";
+          });
+          const idx = Math.max(0, Math.min(N - 1, Math.round(p)));
+          if (idx !== act) show(idx);
+        }
+        function show(i) {
+          act = i;
+          const s = S[i],
+            f = s.f,
+            d = s.d;
+          stage.style.setProperty("--accent", f.ac);
+
+          // Use the real dessert image as the background watermark
+          bg.style.backgroundImage = `url('${d.img}')`;
+          bg.textContent = "";
+
+          // Fallback for background watermark
+          const testBgImg = new Image();
+          testBgImg.onerror = () => {
+            bg.style.backgroundImage = "none";
+            bg.textContent = d.e;
+          };
+          testBgImg.src = d.img;
+
+          // Show the boba drink image and details
+          txt.innerHTML = `
+            <div class="cupwrap">
+              <img src="${BOBA_IMAGES[s.fi]}" alt="${f.n}" />
+            </div>
+            <span class="eb">Best Of Combo with ${f.n}</span>
+            <h1>${d.n}</h1>
+            <p>${d.d}</p>
+            <div class="pn"> ${d.pair}</div>
+            <div class="row2">
+              <div class="price">${d.p}</div>
+              <button class="cta">Add to order</button>
+            </div>`;
+
+          txt.querySelector(".cta").onclick = (e) => {
+            e.target.textContent = "Added ✓";
+            e.target.disabled = true;
+            e.target.style.opacity = ".7";
+          };
+          txt.classList.remove("in");
+          void txt.offsetWidth;
+          txt.classList.add("in");
+          bg.classList.remove("in");
+          void bg.offsetWidth;
+          bg.classList.add("in");
+          navb.forEach((b, j) => b.classList.toggle("on", j === s.fi));
+          cnt.textContent = `${f.n} · dessert ${s.di + 1} of ${f.ds.length}`;
+        }
+        const inPair = () =>
+          scrollY >= wrapTop - 10 && scrollY <= wrapTop + (N - 1) * U + 10;
+        addEventListener("resize", layout);
+        addEventListener("keydown", (e) => {
+          if (!inPair()) return;
+          const i = Math.round((scrollY - wrapTop) / U);
+          if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+            e.preventDefault();
+            go(Math.min(N - 1, i + 1));
+          }
+          if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+            e.preventDefault();
+            go(Math.max(0, i - 1));
+          }
+        });
+        function loop() {
+          const t = Math.max(0, Math.min(N - 1, (scrollY - wrapTop) / U));
+          if (Math.abs(t - cur) > 0.001) {
+            cur += (t - cur) * 0.14;
+            update(cur);
+          }
+          const inO = scrollY > gid("outlet").offsetTop - innerHeight * 0.5;
+          const inP = !inO && scrollY > wrapTop - innerHeight * 0.5;
+          gid("lnkOut").classList.toggle("on", inO);
+          gid("lnkPair").classList.toggle("on", inP);
+          gid("lnkMenu").classList.toggle("on", !inO && !inP);
+          requestAnimationFrame(loop);
+        }
+        layout();
+        loop();
+      })();
+
+      /* ---------- outlet experience (circular carousel) ---------- */
+      (function () {
+        // Each outlet photo is used as the card background.
+        // NOTE: fixed the two local paths (they had a stray "\ " before them).
+        const O = [
+          {
+            e: "🛋️",
+            n: "Cozy lounge seating",
+            d: "Deep sofas and window nooks made for long catch-ups.",
+            t: "All day",
+            c: "#c68b59",
+            img: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=800&auto=format&fit=crop",
+          },
+          {
+            e: "📶",
+            n: "Free fast Wi-Fi",
+            d: "Plug in, sip and stay productive with power at every seat.",
+            t: "Free",
+            c: "#6d9ee0",
+            img: "freewi.jpg",
+          },
+          {
+            e: "🎲",
+            n: "Board game wall",
+            d: "Over 80 games to borrow while your pearls disappear.",
+            t: "Borrow free",
+            c: "#9a6bd0",
+            img: "game cafe.jpg",
+          },
+          {
+            e: "🧋",
+            n: "Build-your-own boba",
+            d: "Pick tea, milk, sweetness and toppings at our live bar.",
+            t: "Daily",
+            c: "#ef6f8e",
+            img: "https://images.unsplash.com/photo-1558857563-b371033873b8?q=80&w=800&auto=format&fit=crop",
+          },
+          {
+            e: "🎶",
+            n: "Live music nights",
+            d: "Acoustic sets every Friday and Saturday evening.",
+            t: "Fri – Sat",
+            c: "#e0893a",
+            img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=800&auto=format&fit=crop",
+          },
+          {
+            e: "🌿",
+            n: "Garden patio",
+            d: "Open-air seating with fairy lights, pet-friendly.",
+            t: "Pets welcome",
+            c: "#7fb04a",
+            img: "https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?q=80&w=800&auto=format&fit=crop",
+          },
+          {
+            e: "🎉",
+            n: "Private party room",
+            d: "Book our back room for birthdays and team treats.",
+            t: "Reserve",
+            c: "#d95f7a",
+            img: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=800&auto=format&fit=crop",
+          },
+        ];
+        const N = O.length,
+          sec = gid("outlet"),
+          deck = gid("odeck"),
+          ring = gid("oring"),
+          dots = gid("odots"),
+          bgBlur = gid("o-bg-blur");
+        let w, h, cw, ch, R, step, sp, cx, cy,
+          cur = 0, tgt = 0, act = -1,
+          drag = false, moved = false, sx = 0, st = 0, wt;
+
+        const cards = O.map((o, i) => {
+          const c = document.createElement("div");
+          c.className = "o-card";
+          c.style.setProperty("--c", o.c);
+          // image becomes the card background (quoted so spaces in names work)
+          c.style.setProperty("--img", `url("${o.img}")`);
+          c.innerHTML = `
+            <h3>${o.n}</h3>
+            <p>${o.d}</p>
+            <i>${o.t}</i>
+          `;
+          c.onclick = () => {
+            if (!moved) go(i);
+          };
+          deck.appendChild(c);
+          dots.appendChild(document.createElement("b"));
+          return c;
+        });
+        const dotEls = [...dots.children];
+        const clamp = (v) => Math.max(0, Math.min(N - 1, v));
+        function go(i) {
+          tgt = clamp(i);
+        }
+
+        function layout() {
+          w = innerWidth;
+          h = innerHeight;
+          const m = w <= 800;
+          cw = Math.min(250, w * 0.62, h * 0.4);
+          ch = cw * 1.25;
+          R = Math.min(Math.max(w * 0.45, 400), 640);
+          sp = cw * (m ? 0.8 : 1.08);
+          step = sp / R;
+          cx = w / 2;
+          cy = h * 0.56 + R;
+          deck.style.setProperty("--cw", cw + "px");
+          deck.style.setProperty("--ch", ch + "px");
+          ring.style.cssText = `width:${2 * R}px;height:${2 * R}px;left:${cx - R}px;top:${cy - R}px`;
+          update();
+        }
+        function update() {
+          cards.forEach((c, i) => {
+            const d = i - cur,
+              ad = Math.abs(d),
+              th = d * step;
+            const x = cx + R * Math.sin(th),
+              y = cy - R * Math.cos(th);
+            const op =
+              ad > 3.2 ? 0 : Math.max(0, 1 - Math.max(0, ad - 1.6) / 1.4);
+            const s = 1.1 - 0.22 * Math.min(ad, 1);
+            c.style.transform = `translate(${x - cw / 2}px,${y - ch / 2}px) rotate(${th}rad) scale(${s})`;
+            c.style.opacity = op;
+            c.style.zIndex = 100 - Math.round(ad * 10);
+            c.style.visibility = op < 0.02 ? "hidden" : "visible";
+          });
+          const idx = clamp(Math.round(cur));
+          if (idx !== act) {
+            act = idx;
+            sec.style.setProperty("--oac", O[idx].c);
+            bgBlur.style.backgroundImage = `url("${O[idx].img}")`;
+            dotEls.forEach((d, j) => d.classList.toggle("on", j === idx));
+          }
+        }
+
+        /* drag / swipe */
+        sec.addEventListener("pointerdown", (e) => {
+          if (e.target.closest("button")) return;
+          drag = true;
+          moved = false;
+          sx = e.clientX;
+          st = tgt;
+        });
+        addEventListener("pointermove", (e) => {
+          if (!drag) return;
+          const dx = e.clientX - sx;
+          if (Math.abs(dx) > 6) moved = true;
+          tgt = Math.max(-0.4, Math.min(N - 0.6, st - dx / sp));
+        });
+        const end = () => {
+          if (!drag) return;
+          drag = false;
+          tgt = clamp(Math.round(tgt));
+          setTimeout(() => (moved = false), 0);
+        };
+        addEventListener("pointerup", end);
+        addEventListener("pointercancel", end);
+
+        /* trackpad horizontal scroll */
+        sec.addEventListener(
+          "wheel",
+          (e) => {
+            if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+            e.preventDefault();
+            tgt = Math.max(-0.4, Math.min(N - 0.6, tgt + e.deltaX / sp));
+            clearTimeout(wt);
+            wt = setTimeout(() => (tgt = clamp(Math.round(tgt))), 120);
+          },
+          { passive: false },
+        );
+
+        gid("oprev").onclick = () => go(Math.round(tgt) - 1);
+        gid("onext").onclick = () => go(Math.round(tgt) + 1);
+        // "Find an outlet" scrolls down to the Sri Lanka map
+        gid("octa").onclick = () =>
+          scrollTo({ top: gid("locations").offsetTop, behavior: "smooth" });
+        addEventListener("keydown", (e) => {
+          const r = sec.getBoundingClientRect();
+          if (r.top > innerHeight * 0.5 || r.bottom < innerHeight * 0.5) return;
+          if (e.key === "ArrowRight") go(Math.round(tgt) + 1);
+          if (e.key === "ArrowLeft") go(Math.round(tgt) - 1);
+        });
+        addEventListener("resize", layout);
+        (function loop() {
+          if (Math.abs(tgt - cur) > 0.001) {
+            cur += (tgt - cur) * 0.12;
+            update();
+          }
+          requestAnimationFrame(loop);
+        })();
+        layout();
+      })();
+
+      /* ---------- outlet locations map (Sri Lanka) ---------- */
+      (function () {
+        /* EDIT these details (area / hours / phone are placeholders) */
+        const L = [
+          { n: "Colombo",      lo: 79.86, la: 6.93, area: "Colombo 03",      hrs: "10:00 AM – 11:00 PM", tel: "+94 11 000 0001" },
+          { n: "Gampaha",      lo: 80.00, la: 7.09, area: "Gampaha town",    hrs: "10:00 AM – 10:00 PM", tel: "+94 33 000 0002" },
+          { n: "Kurunegala",   lo: 80.36, la: 7.49, area: "Kurunegala city", hrs: "10:00 AM – 10:00 PM", tel: "+94 37 000 0003" },
+          { n: "Kandy",        lo: 80.63, la: 7.29, area: "Kandy city",      hrs: "10:00 AM – 10:30 PM", tel: "+94 81 000 0004" },
+          { n: "Galle",        lo: 80.22, la: 6.03, area: "Galle Fort area", hrs: "10:00 AM – 10:00 PM", tel: "+94 91 000 0005" },
+          { n: "Jaffna",       lo: 80.01, la: 9.66, area: "Jaffna town",     hrs: "10:00 AM – 9:30 PM",  tel: "+94 21 000 0006" },
+          { n: "Anuradhapura", lo: 80.41, la: 8.31, area: "New Town",        hrs: "10:00 AM – 9:30 PM",  tel: "+94 25 000 0007" },
+          { n: "Trincomalee",  lo: 81.23, la: 8.57, area: "Town centre",     hrs: "10:00 AM – 10:00 PM", tel: "+94 26 000 0008" },
+        ];
+        /* simplified island outline [lon, lat] */
+        const OUT = [[80.03,9.80],[80.25,9.83],[80.45,9.62],[80.62,9.40],[80.82,9.27],[81.0,8.85],[81.22,8.55],[81.33,8.20],[81.45,7.90],[81.70,7.60],[81.85,7.15],[81.86,6.80],[81.55,6.40],[81.30,6.18],[81.05,6.10],[80.60,5.93],[80.20,6.02],[79.98,6.45],[79.85,6.93],[79.83,7.30],[79.80,7.80],[79.85,8.20],[79.92,8.60],[79.80,8.95],[79.92,9.30],[79.97,9.55],[79.92,9.72]];
+        const P = (lo, la) => [(lo - 79.55) * 100 + 10, (10 - la) * 100 + 10];
+        const svg = gid("omap"),
+          list = gid("lcities"),
+          card = gid("lcard");
+
+        const path =
+          OUT.map((p, i) => (i ? "L" : "M") + P(p[0], p[1]).map((v) => v.toFixed(1)).join(" ")).join("") + "Z";
+        svg.innerHTML =
+          `<path class="land" d="${path}"/>` +
+          L.map((c, i) => {
+            const [x, y] = P(c.lo, c.la);
+            return `<g class="pin" data-i="${i}" tabindex="0" role="button" aria-label="${c.n}">
+              <circle class="pulse" cx="${x}" cy="${y}" r="5"/>
+              <circle class="dot" cx="${x}" cy="${y}" r="5"/>
+              <text x="${x + 9}" y="${y + 3}">${c.n}</text></g>`;
+          }).join("");
+
+        L.forEach((c, i) => {
+          const b = document.createElement("button");
+          b.textContent = c.n;
+          b.onclick = () => pick(i);
+          list.appendChild(b);
+        });
+        const pins = [...svg.querySelectorAll(".pin")],
+          btns = [...list.children];
+        pins.forEach((p, i) => {
+          p.onclick = () => pick(i);
+          p.onkeydown = (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              pick(i);
+            }
+          };
+        });
+
+        function pick(i) {
+          const c = L[i];
+          pins.forEach((p, j) => p.classList.toggle("on", j === i));
+          btns.forEach((b, j) => b.classList.toggle("on", j === i));
+          pins[i].parentNode.appendChild(pins[i]); // bring pin to front
+          card.style.animation = "none";
+          void card.offsetWidth;
+          card.style.animation = "";
+          card.innerHTML = `<h3>🧋 Boba Bar ${c.n}</h3>
+            <div class="lr"><b>Location</b><span>${c.area}, ${c.n}</span></div>
+            <div class="lr"><b>Hours</b><span>${c.hrs}</span></div>
+            <div class="lr"><b>Phone</b><span>${c.tel}</span></div>
+            <button class="lbtn">Get directions</button>`;
+          card.querySelector(".lbtn").onclick = () =>
+            window.open(
+              "https://www.google.com/maps/search/?api=1&query=" +
+                encodeURIComponent("Boba Bar " + c.n + " Sri Lanka"),
+              "_blank",
+            );
+        }
+        pick(0);
+      })();
+    </script>
+  </body>
+</html>
